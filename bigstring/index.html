@@ -5,13 +5,26 @@
 <title>Big String</title>
 </head>
 
-
 <body>
 
-<textarea id="blank" rows="4" cols="50">
-Hi
-</textarea>
-<button type="button">Generate!</button>
-  
+<textarea id="blank" rows="16" cols="150" onclick="this.focus();this.select()" readonly="readonly"></textarea>
+<input id="button" type="submit" onclick="this.select();myFunction();" value="Generate!"/>
+
+<script>
+
+function myFunction(){
+	const Http = new XMLHttpRequest();
+	const url="https://script.google.com/macros/s/AKfycbzm3I9ENulE7uOmze53cyDuj7Igi7fmGiQ6w045fCRxs_sK3D4/exec";
+	Http.open("GET", url);
+	Http.send();
+
+	Http.onreadystatechange = (e) => {
+	  let download_url = JSON.parse(Http.responseText).map(({ download_url }) => download_url);
+	  document.getElementById("blank").value = download_url.join("\n");
+	};
+};   
+
+</script>
+
 </body>
 </html>
