@@ -1,30 +1,121 @@
 <!DOCTYPE html>
 <html>
-
 <head>
 <title>Big String</title>
-</head>
+<style>
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
 
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 110px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px;
+  position: absolute;
+  z-index: 1;
+  bottom: 150%;
+  left: 50%;
+  margin-left: -75px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltip .tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+</style>
+</head>
 <body>
 
-<textarea id="blank" rows="16" cols="150" onclick="this.focus();this.select()" readonly="readonly"></textarea>
-<input id="button" type="submit" onclick="this.select();myFunction();" value="Generate!"/>
+<h1> BIG STRING yay</h1>
+
+<p> Push these buttons
+
+<div class="tooltip">
+<button onclick="copyAll()" onmouseout="outFunc1()">
+    <span class="tooltiptext" id="tooltip1">Copy to clipboard</span>
+    Copy All
+</button>
+</div>
+
+<div class="tooltip">
+<button onclick="copyVerified()" onmouseout="outFunc2()">
+    <span class="tooltiptext" id="tooltip2">Copy to clipboard</span>
+    Copy All
+</button>
+</div>
+
 
 <script>
-
-function myFunction(){
+function copyAll(){
 	const Http = new XMLHttpRequest();
 	const url="https://script.google.com/macros/s/AKfycbzm3I9ENulE7uOmze53cyDuj7Igi7fmGiQ6w045fCRxs_sK3D4/exec";
 	Http.open("GET", url);
 	Http.send();
 
 	Http.onreadystatechange = (e) => {
-	  let download_url = JSON.parse(Http.responseText).map(({ download_url }) => download_url);
-	  document.getElementById("blank").value = download_url.join("\n");
+		let download_url = JSON.parse(Http.responseText).map(({ download_url }) => download_url);
+	  
+	    const el = document.createElement('textarea');
+	    el.value = download_url.join("\n");
+	    document.body.appendChild(el);
+	    el.select();
+	    document.execCommand('Copy');
+	    document.body.removeChild(el);
+		
+		var tooltip = document.getElementById("tooltip1");
+		tooltip.innerHTML = "Copied URLs!";
 	};
 };   
 
-</script>
+function copyVerified(){
+	const Http = new XMLHttpRequest();
+	const url="https://script.google.com/macros/s/AKfycbzm3I9ENulE7uOmze53cyDuj7Igi7fmGiQ6w045fCRxs_sK3D4/exec";
+	Http.open("GET", url);
+	Http.send();
 
+	Http.onreadystatechange = (e) => {
+	  let download_url = JSON.parse(Http.responseText).filter(({ verified }) => verified).map(({ download_url }) => download_url);
+	  
+	  const el = document.createElement('textarea');
+	  el.value = download_url.join("\n");
+	  document.body.appendChild(el);
+	  el.select();
+	  document.execCommand('Copy');
+	  document.body.removeChild(el);
+	  
+	  var tooltip = document.getElementById("tooltip2");
+	  tooltip.innerHTML = "Copied URLs!";
+	};
+};   
+
+function outFunc1() {
+  var tooltip = document.getElementById("tooltip1");
+  tooltip.innerHTML = "Copy to clipboard";
+};
+
+function outFunc2() {
+  var tooltip = document.getElementById("tooltip2");
+  tooltip.innerHTML = "Copy to clipboard";
+};
+
+</script>
 </body>
 </html>
