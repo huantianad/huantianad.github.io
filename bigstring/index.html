@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html>
-<head>
+<html><head>
 <title>Big String</title>
 <style>
 .tooltip {
@@ -46,25 +44,28 @@
 
 <h1> BIG STRING yay</h1>
 
-<p> Push these buttons
+<p> Push these buttons</p>
 
 <div class="tooltip">
-<button onclick="copyAll()" onmouseout="outFunc1()">
-    <span class="tooltiptext" id="tooltip1">Copy to clipboard</span>
-    Copy All
-</button>
+	<button onmouseout="outFunc()" data-clipboard-text="You're not supposed to get this. Maybe try waiting a second and pressing the button again." class="btn" id="btn-all">
+		<span class="tooltiptext">Copy to clipboard</span>
+		Copy All
+	</button>
 </div>
 
 <div class="tooltip">
-<button onclick="copyVerified()" onmouseout="outFunc2()">
-    <span class="tooltiptext" id="tooltip2">Copy to clipboard</span>
-    Copy Checked
-</button>
+	<button onmouseout="outFunc()" data-clipboard-text="You're not supposed to get this. Maybe try waiting a second and pressing the button again." class="btn" id="btn-ver">
+		<span class="tooltiptext">Copy to clipboard</span>
+		Copy Checked
+	</button>
 </div>
 
 
+    
+<script src="bundle.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js"></script>
 <script>
-function copyAll(){
 	const Http = new XMLHttpRequest();
 	const url="https://script.google.com/macros/s/AKfycbzm3I9ENulE7uOmze53cyDuj7Igi7fmGiQ6w045fCRxs_sK3D4/exec";
 	Http.open("GET", url);
@@ -72,50 +73,34 @@ function copyAll(){
 
 	Http.onreadystatechange = (e) => {
 		let download_url = JSON.parse(Http.responseText).map(({ download_url }) => download_url);
-	  
-	    const el = document.createElement('textarea');
-	    el.value = download_url.join("\n");
-	    document.body.appendChild(el);
-	    el.select();
-	    document.execCommand('Copy');
-	    document.body.removeChild(el);
-		
-		var tooltip = document.getElementById("tooltip1");
-		tooltip.innerHTML = "Copied URLs!";
+		let download_url_verified = JSON.parse(Http.responseText).filter(({ verified }) => verified).map(({ download_url }) => download_url);
+
+		document.getElementById("btn-all").setAttribute("data-clipboard-text", download_url.join("\n"))
+		document.getElementById("btn-ver").setAttribute("data-clipboard-text", download_url_verified.join("\n"))
 	};
-};   
+	var clipboard = new ClipboardJS('.btn');
 
-function copyVerified(){
-	const Http = new XMLHttpRequest();
-	const url="https://script.google.com/macros/s/AKfycbzm3I9ENulE7uOmze53cyDuj7Igi7fmGiQ6w045fCRxs_sK3D4/exec";
-	Http.open("GET", url);
-	Http.send();
+	clipboard.on('success', function(e) {
+		console.log(e)
+		var tooltip = document.querySelectorAll(".tooltiptext");
+		tooltip.forEach(element => {
+		  element.innerHTML = "Copied URLs!";
+		});
+	});
 
-	Http.onreadystatechange = (e) => {
-	  let download_url = JSON.parse(Http.responseText).filter(({ verified }) => verified).map(({ download_url }) => download_url);
-	  
-	  const el = document.createElement('textarea');
-	  el.value = download_url.join("\n");
-	  document.body.appendChild(el);
-	  el.select();
-	  document.execCommand('Copy');
-	  document.body.removeChild(el);
-	  
-	  var tooltip = document.getElementById("tooltip2");
-	  tooltip.innerHTML = "Copied URLs!";
+	clipboard.on('error', function(e) {
+		var tooltip = document.querySelectorAll(".tooltiptext");
+		tooltip.forEach(element => {
+		  element.innerHTML = "Error copying URLs!";
+		});
+	});
+
+	function outFunc() {
+	  var tooltip = document.querySelectorAll(".tooltiptext");
+	  tooltip.forEach(element => {
+		element.innerHTML = "Copy to clipboard";
+	  });
 	};
-};   
-
-function outFunc1() {
-  var tooltip = document.getElementById("tooltip1");
-  tooltip.innerHTML = "Copy to clipboard";
-};
-
-function outFunc2() {
-  var tooltip = document.getElementById("tooltip2");
-  tooltip.innerHTML = "Copy to clipboard";
-};
-
 </script>
 </body>
 </html>
